@@ -227,7 +227,7 @@ foreach($entities as $entity) {
     //List computer
     foreach($computers  as $computer) {
         if ($computer['entity']['id'] == $entity['id']) {
-            $inventory .= $computer['name'].".".$computer['domain']."\n";        
+            $inventory .= $computer['name']. (!empty($computer['domain']) ? ".".$computer['domain']: "") ."\n";        
         }    
     }
     //Set group children
