@@ -175,11 +175,11 @@ if (!empty($response)) {
     }
 }
 //Loop all entities
-foreach($entities as $entitie_id => $entitie) {
+foreach($entities as $entity_id => $entity) {
         //Set children 
         foreach($entities as $key => $parent) {
-            if ($parent['name'] == $entitie['parent'])
-                $entities[$key]['children'][] = $entitie['id'];
+            if ($parent['name'] == $entity['parent'])
+                $entities[$key]['children'][] = $entity['id'];
         }      
 }
 
