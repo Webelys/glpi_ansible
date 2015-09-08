@@ -203,7 +203,7 @@ foreach ($computers as $key => $computer) {
 
     if (!empty($response)) {
        $computers[$key]=array_merge($computers[$key],$response);
-       $computers[$key]['entitie_name'] = $entities[$computers[$key]['entities_id']];
+       $computers[$key]['entity'] = $entities[$computers[$key]['entities_id']];
     }
 }
 
