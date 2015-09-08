@@ -120,15 +120,35 @@ if (isset($options['base64'])) {
    $options['base64'] = base64_encode($content);
 }
 
-// Login to GLPI
-$url_request="http://$host/$url?method=glpi.doLogin&login_name=".$options['username']."&login_password=".$options['password'];
-echo "+ Calling 'glpi.doLogin' on $url_request\n";
-$file = file_get_contents($url_request, false);
-if (!$file) {
-   die("+ No response\n");
+function glpi_request($host,$url,$method,$query_datas) {
+    $query_datas['method']=$method;
+    
+    $query_str=http_build_query($query_datas);
+    $url_request="http://".$host."/".$url."?".$query_str;
+
+    echo "+ Calling '".$method."' on $url_request\n";
+
+    $file = file_get_contents($url_request, false);
+    if (!$file) {
+       die("+ No response\n");
+    }
+
+    $response = json_decode($file, true);
+
+    if (!is_array($response)) {
+       echo $file;
+       die ("+ Bad response\n");
+    }
+
+    if (isset($response['faultCode'])) {
+        die("REST error(".$response['faultCode']."): ".$response['faultString']."\n");
+    }
+
+    return $response;
 }
 
-$response = json_decode($file, true);
+// Login to GLPI
+$response = glpi_request($host,$url,'glpi.doLogin',array('login_name' => $options['username'], 'login_password' => $options['password'] ));
 
 if (!is_array($response)) {
    echo $file;
@@ -142,27 +162,10 @@ if (!isset($response['session'])) {
 $session=$response['session'];
 
 //Entities listing
+$response = glpi_request($host,$url,'glpi.listEntities',array('session' => $session));
+
 $entities = array();
-$url_request="http://$host/$url?method=glpi.listEntities&session=".$session;
-echo "+ Calling 'glpi.listEntities' on $url_request\n";
-
-$file = file_get_contents($url_request, false);
-if (!$file) {
-   die("+ No response\n");
-}
-
-$response = json_decode($file, true);
-if (!is_array($response)) {
-   echo $file;
-   die ("+ Bad response\n");
-   break;
-}
-
-if (isset($response['faultCode'])) {
-    echo("REST error(".$response['faultCode']."): ".$response['faultString']."\n");
-    break;
-} else {
-       
+if (!empty($response)) {       
     foreach($response as $row) {
        $entities[$row['id']] = $row['completename'];        
     }
@@ -173,62 +176,26 @@ $start = 0;
 $limit=20;
 $computers=array();
 do {    
-    $url_request="http://$host/$url?method=glpi.listObjects&session=".$session."&itemtype=Computer&start=$start&limit=$limit";
-    echo "+ Calling 'glpi.listObjects' on $url_request\n";
-
-    $file = file_get_contents($url_request, false);
-    if (!$file) {
-       die("+ No response\n");
-    }
-
-    $response = json_decode($file, true);
-    if (!is_array($response)) {
-       echo $file;
-       die ("+ Bad response\n");
-       break;
-    }
-
-    if (isset($response['faultCode'])) {
-        echo("REST error(".$response['faultCode']."): ".$response['faultString']."\n");
-        break;
-    } else {       
+    $response = glpi_request($host,$url,'glpi.listObjects',array('session' => $session, 'itemtype' => 'Computer','start' => $start, 'limit' => $limit));
+    if (!empty($response)) {
        $computers=array_merge($computers,$response);
     }
-  $start += $limit;
+    $start += $limit;
 } while (!empty($response));
 
 
 //Computer Detail
 foreach ($computers as $key => $computer) {
 
-    $url_request="http://$host/$url?method=glpi.getObject&session=".$session."&itemtype=Computer&id=$computer[id]";
-    echo "+ Calling 'glpi.getObject' on $url_request\n";
+    $response = glpi_request($host,$url,'glpi.getObject',array('session' => $session, 'itemtype' => 'Computer','id' => $computer['id']));
 
-    $file = file_get_contents($url_request, false);
-    if (!$file) {
-       die("+ No response\n");
-    }
-
-    $response = json_decode($file, true);
-    if (!is_array($response)) {
-       echo $file;
-       die ("+ Bad response\n");
-       break;
-    }
-
-    if (isset($response['faultCode'])) {
-        echo("REST error(".$response['faultCode']."): ".$response['faultString']."\n");
-        break;
-    } else {       
+    if (!empty($response)) {
        $computers[$key]=array_merge($computers[$key],$response);
        $computers[$key]['entitie_name'] = $entities[$computers[$key]['entities_id']];
     }
 }
 
-$url_request="http://$host/$url?method=glpi.doLogout&session=".$session."&itemtype=Computer&id=$computer[id]";
-echo "+ Calling 'glpi.doLogout' on $url_request\n";
-
-$file = file_get_contents($url_request, false);
+$response = glpi_request($host,$url,'glpi.doLogout',array('session' => $session));
 
 
 print_r($computers);
