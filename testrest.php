@@ -165,8 +165,22 @@ $response = glpi_request($host,$url,'glpi.listEntities',array('session' => $sess
 $entities = array();
 if (!empty($response)) {       
     foreach($response as $row) {
-       $entities[$row['id']] = $row['completename'];        
+        $row_entities = explode('>',$row['completename']);
+        $entities[$row['id']] = array(
+            'id' => $row['id'],
+            'name' => trim(end($row_entities)),
+            'parent' => trim(prev($row_entities)),
+            'children' => array()
+        );
     }
+}
+//Loop all entities
+foreach($entities as $entitie_id => $entitie) {
+        //Set children 
+        foreach($entities as $key => $parent) {
+            if ($parent['name'] == $entitie['parent'])
+                $entities[$key]['children'][] = $entitie['id'];
+        }      
 }
 
 //Get Computers
