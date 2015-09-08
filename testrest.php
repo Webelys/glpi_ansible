@@ -183,6 +183,15 @@ foreach($entities as $entity_id => $entity) {
         }      
 }
 
+//Domains Listing
+$response = glpi_request($host,$url,'glpi.listDropdownValues',array('session' => $session,'dropdown' =>'domains'));
+$domains = array();
+if (!empty($response)) {       
+    foreach($response as $row) {
+        $domains[$row['id']] = $row['name'];
+    }
+}
+
 //Get Computers
 $start = 0;
 $limit=20;
@@ -204,6 +213,7 @@ foreach ($computers as $key => $computer) {
     if (!empty($response)) {
        $computers[$key]=array_merge($computers[$key],$response);
        $computers[$key]['entity'] = $entities[$computers[$key]['entities_id']];
+       $computers[$key]['domain'] = isset($computers[$key]['domains_id']) ? $domains[$computers[$key]['domains_id']] : "";
     }
 }
 
@@ -217,7 +227,7 @@ foreach($entities as $entity) {
     //List computer
     foreach($computers  as $computer) {
         if ($computer['entity']['id'] == $entity['id']) {
-            $inventory .= $computer['name']."\n";        
+            $inventory .= $computer['name'].".".$computer['domain']."\n";        
         }    
     }
     //Set group children
