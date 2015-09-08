@@ -42,7 +42,6 @@ if (!function_exists("json_encode")) {
 $url = "/plugins/webservices/rest.php";
 
 $longoptions=array(
-    'm' => 'method',
     'h' => 'host',
     'p' => 'password',
     'u' => 'username'
@@ -74,14 +73,13 @@ if (sizeof($argv)>1) {
     }
 }
 
-if (empty($options) || isset($options['help']) || !isset($options['method'])) {
+if (empty($options) || isset($options['help']) ) {
    echo "\nusage : ".$_SERVER["SCRIPT_FILENAME"]." [ options] \n\n";
 
    echo "\t--help        : display this screen\n";
    echo "\t-h --host     : server REST plugin URL, default : $url\n";
    echo "\t-u --username : User name for security check (optionnal)\n";
    echo "\t-p --password : User password (optionnal)\n";
-   echo "\t-m --method   : REST method to call, default : glpi.test\n";
    echo "\t--url         : URL REST call\n";
    echo "\t--deflate     : \n";
    echo "\t--base64      : \n";   
