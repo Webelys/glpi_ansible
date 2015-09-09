@@ -83,7 +83,7 @@ if (empty($options) || isset($options['help']) ) {
    echo "\t--url         : URL REST call\n";
    echo "\t--deflate     : \n";
    echo "\t--base64      : \n";   
-
+   echo "\t--ssl         : Act with SSL request (default http)";
 
    die( "\nOther options are used for REST call.\n\n");
 }
@@ -119,10 +119,12 @@ if (isset($options['base64'])) {
 }
 
 function glpi_request($host,$url,$method,$query_datas) {
+    global $options;
     $query_datas['method']=$method;
+    $protocol = isset($options['ssl']) ? "https" : "http";
     
     $query_str=http_build_query($query_datas);
-    $url_request="http://".$host."/".$url."?".$query_str;
+    $url_request=$protocol."://".$host."/".$url."?".$query_str;
 
     echo "+ Calling '".$method."' on $url_request\n";
 
