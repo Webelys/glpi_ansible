@@ -1,7 +1,8 @@
 #!/bin/bash
+. ./variables
 /usr/bin/php5 ./glpi_export_hosts.php \
-	--glpi <glpi url> \
-	--username <glpi account> \
-	--password <glpi account password> \
+	--glpi ${GLPI_SERVER} \
+	--username ${GLPI_ACCOUNT} \
+	--password ${GLPI_PASSWORD} \
 	--ssl \
 	$@
