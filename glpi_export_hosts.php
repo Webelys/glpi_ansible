@@ -152,6 +152,10 @@ function glpi_request($host,$url,$method,$query_datas) {
     return $response;
 }
 
+if (isset($options['host'])) {
+    die('{}');
+}
+
 // Login to GLPI
 $response = glpi_request($host,$url,'glpi.doLogin',array('login_name' => $options['username'], 'login_password' => $options['password'] ));
 
