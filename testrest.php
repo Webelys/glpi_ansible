@@ -44,7 +44,8 @@ $url = "/plugins/webservices/rest.php";
 $longoptions=array(
     'h' => 'host',
     'p' => 'password',
-    'u' => 'username'
+    'u' => 'username',
+    'd' => 'debug'
 );
 
 $options = array();
@@ -84,6 +85,7 @@ if (empty($options) || isset($options['help']) ) {
    echo "\t--deflate     : \n";
    echo "\t--base64      : \n";   
    echo "\t--ssl         : Act with SSL request (default http)";
+   echo "\t-d --debug    : Display debug information (default disabled))'";
 
    die( "\nOther options are used for REST call.\n\n");
 }
@@ -126,7 +128,8 @@ function glpi_request($host,$url,$method,$query_datas) {
     $query_str=http_build_query($query_datas);
     $url_request=$protocol."://".$host."/".$url."?".$query_str;
 
-    echo "+ Calling '".$method."' on $url_request\n";
+    if (isset($options['debug']))
+        echo "+ Calling '".$method."' on $url_request\n";
 
     $file = file_get_contents($url_request, false);
     if (!$file) {
