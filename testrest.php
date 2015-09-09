@@ -219,29 +219,29 @@ foreach ($computers as $key => $computer) {
 
 $response = glpi_request($host,$url,'glpi.doLogout',array('session' => $session));
 
-$inventory = "";
+$inventory = array();
 foreach($entities as $entity) {
     
     //Set Group
-    $inventory .= "[".$entity['name']."]\n";
+    $inventory[] = "[".$entity['name']."]\n";
     //List computer
     foreach($computers  as $computer) {
         if ($computer['entity']['id'] == $entity['id']) {
-            $inventory .= $computer['name']. (!empty($computer['domain']) ? ".".$computer['domain']: "") ."\n";        
+            $inventory[] = $computer['name']. (!empty($computer['domain']) ? ".".$computer['domain']: "") ."\n";        
         }    
     }
     //Set group children
     if (!empty($entity['children'])) {
-        $inventory .= "\n[".$entity['name'].":children]\n";
+        $inventory[] = "\n[".$entity['name'].":children]\n";
         foreach ($entity['children'] as $child_id) {
-            $inventory .=  $entities[$child_id]['name']."\n";
+            $inventory[] =  $entities[$child_id]['name']."\n";
         }
     }
      
-    $inventory .= "\n";
-    
-
+    $inventory[] = "\n";
 }
+// Remove duplicate host
+$inventory = implode("",array_unique($inventory));
 
 print_r($inventory);
 ?>
