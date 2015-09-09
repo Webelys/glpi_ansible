@@ -83,8 +83,6 @@ if (empty($options) || isset($options['help']) ) {
    echo "\t-u --username        : User name for security check (optionnal)\n";
    echo "\t-p --password        : User password (optionnal)\n";
    echo "\t--url                : URL REST call\n";
-   echo "\t--deflate            : \n";
-   echo "\t--base64             : \n";   
    echo "\t--ssl                : Act with SSL request (default http)";
    echo "\t-d --debug           : Display debug information (default disabled))'";
    echo "\t --list              : Return a complet json document";
@@ -101,26 +99,6 @@ if (isset($options['glpi'])) {
    $glpi = $options['glpi'];
 } else {
    $glpi = 'localhost';
-}
-
-if (isset($options['method'])) {
-   $method = $options['method'];
-} else {
-   $method='glpi.test';
-}
-
-$header = "Content-Type: text/html";
-
-if (isset($options['deflate'])) {
-   $header .= "\nAccept-Encoding: deflate";
-}
-
-if (isset($options['base64'])) {
-   $content = @file_get_contents($args['base64']);
-   if (!$content) {
-      die ("File not found or empty (".$args['base64'].")\n");
-   }
-   $options['base64'] = base64_encode($content);
 }
 
 function glpi_request($glpi,$url,$method,$query_datas) {
@@ -258,5 +236,4 @@ foreach($entities as $entity) {
 //Return list json data
 if (isset($options['list'])) {
     print_r(json_encode($inventory));
-} 
-?>
+}
