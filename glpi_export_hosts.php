@@ -230,25 +230,23 @@ foreach($entities as $entity) {
     //Set Group
     $entity['name'] = transliterator_transliterate('Any-Latin; Latin-ASCII;', $entity['name']);
     $entity['name'] = str_replace(' ','',$entity['name']);
-    $inventory[] = "[".$entity['name']."]\n";
+    $inventory[$entity['name']] = array('hosts' => array(), 'children' => array());
     //List computer
     foreach($computers  as $computer) {
         if ($computer['entity']['id'] == $entity['id']) {
-            $inventory[] = str_replace(' ','',$computer['name']). (!empty($computer['domain']) ? ".".$computer['domain']: "") ."\n";        
+            $inventory[$entity['name']]['hosts'][] = str_replace(' ','',$computer['name']). (!empty($computer['domain']) ? ".".$computer['domain']: "");
         }    
     }
     //Set group children
     if (!empty($entity['children'])) {
-        $inventory[] = "\n[".$entity['name'].":children]\n";
         foreach ($entity['children'] as $child_id) {
-            $inventory[] =  $entities[$child_id]['name']."\n";
+            $inventory[$entity['name']]['children'][] =  $entities[$child_id]['name'];
         }
     }
-     
-    $inventory[] = "\n";
+    
+    // Remove duplicate host
+    $inventory[$entity['name']]['hosts'] = array_unique($inventory[$entity['name']]['hosts']);
 }
-// Remove duplicate host
-$inventory = implode("",array_unique($inventory));
 
-print_r($inventory);
+print_r(json_encode($inventory));
 ?>
