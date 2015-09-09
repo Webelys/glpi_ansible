@@ -228,11 +228,13 @@ $inventory = array();
 foreach($entities as $entity) {
     
     //Set Group
+    $entity['name'] = transliterator_transliterate('Any-Latin; Latin-ASCII;', $entity['name']);
+    $entity['name'] = str_replace(' ','',$entity['name']);
     $inventory[] = "[".$entity['name']."]\n";
     //List computer
     foreach($computers  as $computer) {
         if ($computer['entity']['id'] == $entity['id']) {
-            $inventory[] = $computer['name']. (!empty($computer['domain']) ? ".".$computer['domain']: "") ."\n";        
+            $inventory[] = str_replace(' ','',$computer['name']). (!empty($computer['domain']) ? ".".$computer['domain']: "") ."\n";        
         }    
     }
     //Set group children
