@@ -218,7 +218,7 @@ foreach ($computers as $key => $computer) {
     if (!empty($response)) {
        $computers[$key]=array_merge($computers[$key],$response);
        $computers[$key]['entity'] = $entities[$computers[$key]['entities_id']];
-       $computers[$key]['domain'] = isset($computers[$key]['domains_id']) ? $domains[$computers[$key]['domains_id']] : "";
+       $computers[$key]['domain'] = (isset($computers[$key]['domains_id']) && !empty($computers[$key]['domains_id'])) ? $domains[$computers[$key]['domains_id']] : "";
     }
 }
 
