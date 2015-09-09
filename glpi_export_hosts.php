@@ -42,7 +42,8 @@ if (!function_exists("json_encode")) {
 $url = "/plugins/webservices/rest.php";
 
 $longoptions=array(
-    'h' => 'host',
+    'h' => 'help',
+    'g' => 'glpi',
     'p' => 'password',
     'u' => 'username',
     'd' => 'debug'
@@ -77,8 +78,8 @@ if (sizeof($argv)>1) {
 if (empty($options) || isset($options['help']) ) {
    echo "\nusage : ".$_SERVER["SCRIPT_FILENAME"]." [ options] \n\n";
 
-   echo "\t--help               : display this screen\n";
-   echo "\t-h --host            : server REST plugin URL, default : $url\n";
+   echo "\t-h --help            : display this screen\n";
+   echo "\t-g --glpi            : server REST plugin URL, default : $url\n";
    echo "\t-u --username        : User name for security check (optionnal)\n";
    echo "\t-p --password        : User password (optionnal)\n";
    echo "\t--url                : URL REST call\n";
@@ -96,10 +97,10 @@ if (isset($options['url'])) {
    $url = $options['url'];
 }
 
-if (isset($options['host'])) {
-   $host = $options['host'];
+if (isset($options['glpi'])) {
+   $glpi = $options['glpi'];
 } else {
-   $host = 'localhost';
+   $glpi = 'localhost';
 }
 
 if (isset($options['method'])) {
@@ -122,13 +123,13 @@ if (isset($options['base64'])) {
    $options['base64'] = base64_encode($content);
 }
 
-function glpi_request($host,$url,$method,$query_datas) {
+function glpi_request($glpi,$url,$method,$query_datas) {
     global $options;
     $query_datas['method']=$method;
     $protocol = isset($options['ssl']) ? "https" : "http";
     
     $query_str=http_build_query($query_datas);
-    $url_request=$protocol."://".$host."/".$url."?".$query_str;
+    $url_request=$protocol."://".$glpi."/".$url."?".$query_str;
 
     if (isset($options['debug']))
         echo "+ Calling '".$method."' on $url_request\n";
@@ -157,7 +158,7 @@ if (isset($options['host'])) {
 }
 
 // Login to GLPI
-$response = glpi_request($host,$url,'glpi.doLogin',array('login_name' => $options['username'], 'login_password' => $options['password'] ));
+$response = glpi_request($glpi,$url,'glpi.doLogin',array('login_name' => $options['username'], 'login_password' => $options['password'] ));
 
 if (!is_array($response)) {
    echo $file;
@@ -171,7 +172,7 @@ if (!isset($response['session'])) {
 $session=$response['session'];
 
 //Entities listing
-$response = glpi_request($host,$url,'glpi.listEntities',array('session' => $session));
+$response = glpi_request($glpi,$url,'glpi.listEntities',array('session' => $session));
 
 $entities = array();
 if (!empty($response)) {       
@@ -195,7 +196,7 @@ foreach($entities as $entity_id => $entity) {
 }
 
 //Domains Listing
-$response = glpi_request($host,$url,'glpi.listDropdownValues',array('session' => $session,'dropdown' =>'domains'));
+$response = glpi_request($glpi,$url,'glpi.listDropdownValues',array('session' => $session,'dropdown' =>'domains'));
 $domains = array();
 if (!empty($response)) {       
     foreach($response as $row) {
@@ -208,7 +209,7 @@ $start = 0;
 $limit=20;
 $computers=array();
 do {    
-    $response = glpi_request($host,$url,'glpi.listObjects',array('session' => $session, 'itemtype' => 'Computer','start' => $start, 'limit' => $limit));
+    $response = glpi_request($glpi,$url,'glpi.listObjects',array('session' => $session, 'itemtype' => 'Computer','start' => $start, 'limit' => $limit));
     if (!empty($response)) {
        $computers=array_merge($computers,$response);
     }
@@ -219,7 +220,7 @@ do {
 //Computer Detail
 foreach ($computers as $key => $computer) {
 
-    $response = glpi_request($host,$url,'glpi.getObject',array('session' => $session, 'itemtype' => 'Computer','id' => $computer['id']));
+    $response = glpi_request($glpi,$url,'glpi.getObject',array('session' => $session, 'itemtype' => 'Computer','id' => $computer['id']));
 
     if (!empty($response)) {
        $computers[$key]=array_merge($computers[$key],$response);
@@ -228,7 +229,7 @@ foreach ($computers as $key => $computer) {
     }
 }
 
-$response = glpi_request($host,$url,'glpi.doLogout',array('session' => $session));
+$response = glpi_request($glpi,$url,'glpi.doLogout',array('session' => $session));
 
 $inventory = array();
 foreach($entities as $entity) {
