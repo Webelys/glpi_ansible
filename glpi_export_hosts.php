@@ -83,6 +83,7 @@ if (empty($options) || isset($options['help']) ) {
    echo "\t-d --debug           : Display debug information (default disabled))'";
    echo "\t --list              : Return a complet json document";
    echo "\t --host [hostname]   : Return vars associated to this hostname";
+   echo "\t --cache [time]      : Set cache interval (default P01D, 1 day)";
 
    die( "\nOther options are used for REST call.\n\n");
 }
@@ -91,6 +92,24 @@ if (isset($options['glpi'])) {
    $glpi = $options['glpi'];
 } else {
    $glpi = 'http://localhost/glpi/plugins/webservices/rest.php';
+}
+
+if (!isset($options['cache']))
+    $options['cache'] = "P01D";
+
+
+//Check cache validity
+if (file_exists('/tmp/.hosts_json') && isset($options['list'])) {
+    $now = new DateTime();
+    $cache_date = new DateTime("@".filemtime('/tmp/.hosts_json'));
+    $cache_interval = new DateInterval($options['cache']);
+    
+    $cache_expiration = $cache_date->add($cache_interval);
+
+    //Return cached file if not expired
+    if ($cache_expiration > $now) {
+        die(file_get_contents('/tmp/.hosts_json'));
+    }
 }
 
 function glpi_request($glpi,$method,$query_datas) {
@@ -226,5 +245,7 @@ foreach($entities as $entity) {
 
 //Return list json data
 if (isset($options['list'])) {
-    print_r(json_encode($inventory));
+    $list_json = json_encode($inventory);
+    file_put_contents('/tmp/.hosts_json',$list_json);
+    print_r($list_json);
 }
