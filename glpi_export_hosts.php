@@ -229,7 +229,10 @@ foreach($entities as $entity) {
     //List computer
     foreach($computers  as $computer) {
         if ($computer['entity']['id'] == $entity['id']) {
-            $inventory[$entity['name']]['hosts'][] = str_replace(' ','',$computer['name']). (!empty($computer['domain']) ? ".".$computer['domain']: "");
+            $fqdn = str_replace(' ','',$computer['name']). (!empty($computer['domain']) ? ".".$computer['domain']: "");
+            //Prevent duplicate host
+            if (!in_array($fqdn,$inventory[$entity['name']]['hosts']))
+                $inventory[$entity['name']]['hosts'][] = $fqdn;
         }    
     }
     //Set group children
