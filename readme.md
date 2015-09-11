@@ -25,7 +25,7 @@ GLPI_PASSWORD="password"
 ## GLPI configuration
 
 To use this script, we must :
-* install [weservices](http://plugins.glpi-project.org/spip.php?article93) 
+* install [webservices](http://plugins.glpi-project.org/spip.php?article93) 
 * create a rule to allow ansible IP
 
 Note : User account are GLPI user not webeservice account (only IP is used)
