@@ -6,7 +6,7 @@
  LICENSE
 
  This file is autonomous sript to export glpi inventory to ansible
- 
+
  glpi-ansible is free software: you can redistribute it and/or modify
  it under the terms of the GNU Affero General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
@@ -20,11 +20,12 @@
  You should have received a copy of the GNU Affero General Public License
  along with Webservices. If not, see <http://www.gnu.org/licenses/>.
 
- @package   glpi-ansible 
+ @package   glpi-ansible
  @author    cam.lafit
  @copyright Copyright (c) 2015-2015 Webelys team
  @license   AGPL License 3.0 or (at your option) any later version
             http://www.gnu.org/licenses/agpl-3.0-standalone.html
+ @link      https://github.com/Webelys/glpi_ansible
  @link      http://www.glpi-project.org/
  @link      http://docs.ansible.com/ansible/intro_inventory.html
  @since     2015
@@ -38,6 +39,8 @@
 if (!function_exists("json_encode")) {
    die("Extension json_encode not loaded\n");
 }
+
+$cache_file = '/tmp/.glpi_ansible_hosts_cache.json';
 
 $longoptions=array(
     'h' => 'help',
@@ -59,33 +62,18 @@ if (sizeof($argv)>1) {
         if (isset($argv[$i+1]) and substr($argv[$i+1],0,1) != "-") {
             $option= $argv[$i+1];
             $i++;
-        } 
-        //option with = 
+        }
+        //option with =
         if (preg_match('/^--?(\w*)=(\w*)/',$argv[$i],$matches)) {
             $arg=$matches[1];
-            $option=$matches[2];        
-        }        
+            $option=$matches[2];
+        }
         //Force to long option if set
         if (isset($longoptions[$arg]))
             $arg=$longoptions[$arg];
-        
+
         $options[$arg]=$option;
     }
-}
-
-if (empty($options) || isset($options['help']) ) {
-   echo "\nusage : ".$_SERVER["SCRIPT_FILENAME"]." [ options] \n\n";
-
-   echo "\t-h --help            : display this screen\n";
-   echo "\t-g --glpi            : server REST plugin URL, default : $url\n";
-   echo "\t-u --username        : User name for security check (optionnal)\n";
-   echo "\t-p --password        : User password (optionnal)\n";
-   echo "\t-d --debug           : Display debug information (default disabled))'";
-   echo "\t --list              : Return a complet json document";
-   echo "\t --host [hostname]   : Return vars associated to this hostname";
-   echo "\t --cache [time]      : Set cache interval (default P01D, 1 day)";
-
-   die( "\nOther options are used for REST call.\n\n");
 }
 
 if (isset($options['glpi'])) {
@@ -97,25 +85,43 @@ if (isset($options['glpi'])) {
 if (!isset($options['cache']))
     $options['cache'] = "P01D";
 
+if (isset($options['host'])) {
+    die('{"Not Yet Implemented"}');
+}
+
+if (empty($options) || isset($options['help']) ) {
+    echo "Usage: " . $_SERVER["SCRIPT_FILENAME"] . " [options]\n";
+    echo "\n";
+    echo "  --glpi      -g      : GLPI \"rest.php\" webservice URL (default: \"" . $glpi . "\")\n";
+    echo "  --username  -u      : GLPI user name\n";
+    echo "  --password  -p      : GLPI user password\n";
+    echo "  --list              : Return a complete JSON document (default when called by Ansible)\n";
+    echo "  --host [hostname]   : Return vars associated to this hostname\n";
+    echo "  --cache [time]      : Set duration of local cache (default: \"" . $options['cache'] . "\" (P01D = 1 day))\n";
+    echo "  --debug     -d      : Display debug information (default disabled)\n";
+    echo "  --help      -h      : display this screen\n";
+    echo "\n";
+    die( "Any other options are used for REST call.\n");
+}
 
 //Check cache validity
-if (file_exists('/tmp/.hosts_json') && isset($options['list'])) {
+if (file_exists($cache_file) && isset($options['list'])) {
     $now = new DateTime();
-    $cache_date = new DateTime("@".filemtime('/tmp/.hosts_json'));
+    $cache_date = new DateTime("@".filemtime($cache_file));
     $cache_interval = new DateInterval($options['cache']);
-    
+
     $cache_expiration = $cache_date->add($cache_interval);
 
     //Return cached file if not expired
     if ($cache_expiration > $now) {
-        die(file_get_contents('/tmp/.hosts_json'));
+        die(file_get_contents($cache_file));
     }
 }
 
 function glpi_request($glpi,$method,$query_datas) {
     global $options;
     $query_datas['method']=$method;
-    
+
     $query_str=http_build_query($query_datas);
     $url_request=$glpi."?".$query_str;
 
@@ -141,10 +147,6 @@ function glpi_request($glpi,$method,$query_datas) {
     return $response;
 }
 
-if (isset($options['host'])) {
-    die('{}');
-}
-
 // Login to GLPI
 $response = glpi_request($glpi,'glpi.doLogin',array('login_name' => $options['username'], 'login_password' => $options['password'] ));
 
@@ -163,7 +165,7 @@ $session=$response['session'];
 $response = glpi_request($glpi,'glpi.listEntities',array('session' => $session));
 
 $entities = array();
-if (!empty($response)) {       
+if (!empty($response)) {
     foreach($response as $row) {
         $row_entities = explode('>',$row['completename']);
         $entities[$row['id']] = array(
@@ -176,17 +178,17 @@ if (!empty($response)) {
 }
 //Loop all entities
 foreach($entities as $entity_id => $entity) {
-        //Set children 
+        //Set children
         foreach($entities as $key => $parent) {
             if ($parent['name'] == $entity['parent'])
                 $entities[$key]['children'][] = $entity['id'];
-        }      
+        }
 }
 
 //Domains Listing
 $response = glpi_request($glpi,'glpi.listDropdownValues',array('session' => $session,'dropdown' =>'domains'));
 $domains = array();
-if (!empty($response)) {       
+if (!empty($response)) {
     foreach($response as $row) {
         $domains[$row['id']] = $row['name'];
     }
@@ -194,9 +196,9 @@ if (!empty($response)) {
 
 //Get Computers
 $start = 0;
-$limit=20;
-$computers=array();
-do {    
+$limit = 20;
+$computers = array();
+do {
     $response = glpi_request($glpi,'glpi.listObjects',array('session' => $session, 'itemtype' => 'Computer','start' => $start, 'limit' => $limit));
     if (!empty($response)) {
        $computers=array_merge($computers,$response);
@@ -221,7 +223,7 @@ $response = glpi_request($glpi,'glpi.doLogout',array('session' => $session));
 
 $inventory = array();
 foreach($entities as $entity) {
-    
+
     //Set Group
     $entity['name'] = transliterator_transliterate('Any-Latin; Latin-ASCII;', $entity['name']);
     $entity['name'] = str_replace(' ','',$entity['name']);
@@ -233,7 +235,7 @@ foreach($entities as $entity) {
             //Prevent duplicate host
             if (!in_array($fqdn,$inventory[$entity['name']]['hosts']))
                 $inventory[$entity['name']]['hosts'][] = $fqdn;
-        }    
+        }
     }
     //Set group children
     if (!empty($entity['children'])) {
@@ -241,7 +243,7 @@ foreach($entities as $entity) {
             $inventory[$entity['name']]['children'][] =  $entities[$child_id]['name'];
         }
     }
-    
+
     // Remove duplicate host
     $inventory[$entity['name']]['hosts'] = array_unique($inventory[$entity['name']]['hosts']);
 }
@@ -249,6 +251,6 @@ foreach($entities as $entity) {
 //Return list json data
 if (isset($options['list'])) {
     $list_json = json_encode($inventory);
-    file_put_contents('/tmp/.hosts_json',$list_json);
+    file_put_contents($cache_file, $list_json);
     print_r($list_json);
 }
