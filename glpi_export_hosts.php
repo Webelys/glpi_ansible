@@ -85,10 +85,6 @@ if (isset($options['glpi'])) {
 if (!isset($options['cache']))
     $options['cache'] = "P01D";
 
-if (isset($options['host'])) {
-    die('{"Not Yet Implemented"}');
-}
-
 if (empty($options) || isset($options['help']) ) {
     echo "Usage: " . $_SERVER["SCRIPT_FILENAME"] . " [options]\n";
     echo "\n";
@@ -96,12 +92,17 @@ if (empty($options) || isset($options['help']) ) {
     echo "  --username  -u      : GLPI user name\n";
     echo "  --password  -p      : GLPI user password\n";
     echo "  --list              : Return a complete JSON document (default when called by Ansible)\n";
-    echo "  --host [hostname]   : Return vars associated to this hostname\n";
+    echo "  --host [hostname]   : [Not implemented yet] Return vars associated to this hostname\n";
     echo "  --cache [time]      : Set duration of local cache (default: \"" . $options['cache'] . "\" (P01D = 1 day))\n";
     echo "  --debug     -d      : Display debug information (default disabled)\n";
     echo "  --help      -h      : display this screen\n";
     echo "\n";
     die( "Any other options are used for REST call.\n");
+}
+
+# TODO Not implemented yet.
+if (isset($options['host'])) {
+    die('{}');
 }
 
 //Check cache validity
