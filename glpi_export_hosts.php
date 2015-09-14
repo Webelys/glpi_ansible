@@ -87,18 +87,18 @@ if (!isset($options['cache']))
     $options['cache'] = "P01D";
 
 if (empty($options) || isset($options['help'])) {
-   echo "\nusage : ".$_SERVER["SCRIPT_FILENAME"]." [ options] \n\n";
-
-   echo "\t-h --help            : display this screen\n";
-   echo "\t-g --glpi            : server REST plugin URL, default : $url\n";
-   echo "\t-u --username        : User name for security check (optionnal)\n";
-   echo "\t-p --password        : User password (optionnal)\n";
-   echo "\t-d --debug           : Display debug information (default disabled))'";
-   echo "\t --list              : Return a complet json document";
-   echo "\t --host [hostname]   : Return vars associated to this hostname";
-   echo "\t --cache [time]      : Set cache interval (default P01D, 1 day)";
-
-   die("\nOther options are used for REST call.\n\n");
+    echo "Usage: " . $_SERVER["SCRIPT_FILENAME"] . " [options]\n";
+    echo "\n";
+    echo "  --glpi      -g      : GLPI \"rest.php\" webservice URL (default: \"" . $glpi . "\")\n";
+    echo "  --username  -u      : GLPI user name\n";
+    echo "  --password  -p      : GLPI user password\n";
+    echo "  --list              : Return a complete JSON document (default when called by Ansible)\n";
+    echo "  --host [hostname]   : [Not implemented yet] Return vars associated to this hostname\n";
+    echo "  --cache [time]      : Set duration of local cache (default: \"" . $options['cache'] . "\" (P01D = 1 day, PTS0S=no cache)\n";
+    echo "  --debug     -d      : Display debug information (default disabled)\n";
+    echo "  --help      -h      : display this screen\n";
+    echo "\n";
+    die( "Any other options are used for REST call.\n");
 }
 
 //Check cache validity
