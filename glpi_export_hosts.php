@@ -73,6 +73,17 @@ if (sizeof($argv)>1) {
     }
 }
 
+if (isset($options['host'])) {
+    die('{}');
+}
+
+if (!isset($options['glpi'])) {
+   $options['glpi'] = 'http://localhost/glpi/plugins/webservices/rest.php';
+}
+
+if (!isset($options['cache']))
+    $options['cache'] = "P01D";
+
 if (empty($options) || isset($options['help'])) {
    echo "\nusage : ".$_SERVER["SCRIPT_FILENAME"]." [ options] \n\n";
 
@@ -87,14 +98,6 @@ if (empty($options) || isset($options['help'])) {
 
    die("\nOther options are used for REST call.\n\n");
 }
-
-if (!isset($options['glpi'])) {
-   $options['glpi'] = 'http://localhost/glpi/plugins/webservices/rest.php';
-}
-
-if (!isset($options['cache']))
-    $options['cache'] = "P01D";
-
 
 //Check cache validity
 if (file_exists('/tmp/.hosts_json') && isset($options['list'])) {
@@ -137,10 +140,6 @@ function glpi_request($glpi, $method, $query_datas) {
     }
 
     return $response;
-}
-
-if (isset($options['host'])) {
-    die('{}');
 }
 
 // Login to GLPI
