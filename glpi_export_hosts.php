@@ -88,10 +88,8 @@ if (empty($options) || isset($options['help']) ) {
    die( "\nOther options are used for REST call.\n\n");
 }
 
-if (isset($options['glpi'])) {
-   $glpi = $options['glpi'];
-} else {
-   $glpi = 'http://localhost/glpi/plugins/webservices/rest.php';
+if (!isset($options['glpi'])) {
+   $options['glpi'] = 'http://localhost/glpi/plugins/webservices/rest.php';
 }
 
 if (!isset($options['cache']))
@@ -146,7 +144,7 @@ if (isset($options['host'])) {
 }
 
 // Login to GLPI
-$response = glpi_request($glpi,'glpi.doLogin',array('login_name' => $options['username'], 'login_password' => $options['password'] ));
+$response = glpi_request($options['glpi'],'glpi.doLogin',array('login_name' => $options['username'], 'login_password' => $options['password'] ));
 
 if (!is_array($response)) {
    echo $file;
@@ -160,7 +158,7 @@ if (!isset($response['session'])) {
 $session=$response['session'];
 
 //Entities listing
-$response = glpi_request($glpi,'glpi.listEntities',array('session' => $session));
+$response = glpi_request($options['glpi'],'glpi.listEntities',array('session' => $session));
 
 $entities = array();
 if (!empty($response)) {       
@@ -184,7 +182,7 @@ foreach($entities as $entity_id => $entity) {
 }
 
 //Domains Listing
-$response = glpi_request($glpi,'glpi.listDropdownValues',array('session' => $session,'dropdown' =>'domains'));
+$response = glpi_request($options['glpi'],'glpi.listDropdownValues',array('session' => $session,'dropdown' =>'domains'));
 $domains = array();
 if (!empty($response)) {       
     foreach($response as $row) {
@@ -197,7 +195,7 @@ $start = 0;
 $limit=20;
 $computers=array();
 do {    
-    $response = glpi_request($glpi,'glpi.listObjects',array('session' => $session, 'itemtype' => 'Computer','start' => $start, 'limit' => $limit));
+    $response = glpi_request($options['glpi'],'glpi.listObjects',array('session' => $session, 'itemtype' => 'Computer','start' => $start, 'limit' => $limit));
     if (!empty($response)) {
        $computers=array_merge($computers,$response);
     }
@@ -208,7 +206,7 @@ do {
 //Computer Detail
 foreach ($computers as $key => $computer) {
 
-    $response = glpi_request($glpi,'glpi.getObject',array('session' => $session, 'itemtype' => 'Computer','id' => $computer['id']));
+    $response = glpi_request($options['glpi'],'glpi.getObject',array('session' => $session, 'itemtype' => 'Computer','id' => $computer['id']));
 
     if (!empty($response)) {
        $computers[$key]=array_merge($computers[$key],$response);
@@ -217,7 +215,7 @@ foreach ($computers as $key => $computer) {
     }
 }
 
-$response = glpi_request($glpi,'glpi.doLogout',array('session' => $session));
+$response = glpi_request($options['glpi'],'glpi.doLogout',array('session' => $session));
 
 $inventory = array();
 foreach($entities as $entity) {
