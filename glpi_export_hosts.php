@@ -45,6 +45,12 @@ if (!function_exists("transliterator_transliterate")) {
 
 $cache_file = '/tmp/.glpi_ansible_hosts_cache.json';
 
+//Load ini configuration
+$ini = array();
+if (file_exists(getcwd().'/glpi.ini')) {
+    $ini = parse_ini_file(getcwd().'/glpi.ini',true);
+}
+
 $longoptions = array(
     'h' => 'help',
     'g' => 'glpi',
@@ -84,7 +90,15 @@ if (isset($options['host'])) {
 }
 
 if (!isset($options['glpi'])) {
-   $options['glpi'] = 'http://localhost/glpi/plugins/webservices/rest.php';
+   $options['glpi'] = isset($ini['glpi']['url']) ? $ini['glpi']['url'] : 'http://localhost/glpi/plugins/webservices/rest.php';
+}
+
+if (!isset($options['username'])) {
+   $options['username'] = isset($ini['glpi']['username']) ? $ini['glpi']['username'] : null;
+}
+
+if (!isset($options['password'])) {
+   $options['password'] = isset($ini['glpi']['password']) ? $ini['glpi']['password'] : null;
 }
 
 if (!isset($options['cache']))
