@@ -248,5 +248,5 @@ foreach($entities as $entity) {
 if (isset($options['list'])) {
     $list_json = json_encode($inventory);
     file_put_contents('/tmp/.hosts_json',$list_json);
-    print_r($list_json);
+    die($list_json);
 }
