@@ -39,6 +39,10 @@ if (!function_exists("json_encode")) {
    die("Extension json_encode not loaded\n");
 }
 
+if (!function_exists("transliterator_transliterate")) {
+   die("Extension intl not loaded\n");
+}
+
 $cache_file = '/tmp/.glpi_ansible_hosts_cache.json';
 
 $longoptions = array(
