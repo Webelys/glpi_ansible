@@ -39,6 +39,8 @@ if (!function_exists("json_encode")) {
    die("Extension json_encode not loaded\n");
 }
 
+$cache_file = '/tmp/.glpi_ansible_hosts_cache.json';
+
 $longoptions = array(
     'h' => 'help',
     'g' => 'glpi',
@@ -100,16 +102,16 @@ if (empty($options) || isset($options['help'])) {
 }
 
 //Check cache validity
-if (file_exists('/tmp/.hosts_json') && isset($options['list'])) {
+if (file_exists($cache_file) && isset($options['list'])) {
     $now = new DateTime();
-    $cache_date = new DateTime("@".filemtime('/tmp/.hosts_json'));
+    $cache_date = new DateTime("@".filemtime($cache_file));
     $cache_interval = new DateInterval($options['cache']);
 
     $cache_expiration = $cache_date->add($cache_interval);
 
     //Return cached file if not expired
     if ($cache_expiration>$now) {
-        die(file_get_contents('/tmp/.hosts_json'));
+        die(file_get_contents($cache_file));
     }
 }
 
@@ -246,6 +248,6 @@ foreach ($entities as $entity) {
 //Return list json data
 if (isset($options['list'])) {
     $list_json = json_encode($inventory);
-    file_put_contents('/tmp/.hosts_json', $list_json);
+    file_put_contents($cache_file, $list_json);
     die($list_json);
 }
