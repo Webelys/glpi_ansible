@@ -56,7 +56,7 @@ if (sizeof($argv)>1) {
         $res = preg_match('/^--?(\w*)/',$argv[$i],$matches);
         $arg=$matches[1];
         $option="";
-        if (isset($argv[$i+1]) and substr($argv[$i+1],0,1) != "-") {
+        if (isset($argv[$i+1]) && substr($argv[$i+1],0,1) != "-") {
             $option= $argv[$i+1];
             $i++;
         } 
