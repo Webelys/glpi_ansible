@@ -37,20 +37,28 @@ git clone git@github.com:Webelys/glpi_ansible.git /etc/ansible/glpi_ansible/
 
 To set GLPI inventory as default hosts Ansible file
 ```bash
-ln -s /etc/ansible/glpi-ansible/hosts /etc/ansible/
+ln -s /etc/ansible/glpi-ansible/glpi.php /etc/ansible/hosts
 ```
 
 To set GLPI inventory as optional hosts Ansible file
 ```bash
-ln -s /etc/ansible/glpi_ansible/hosts /etc/ansible/glpi.sh
+ln -s /etc/ansible/glpi_ansible/glpi.php /etc/ansible/glpi
 ```
 
-Create the configuration file `/etc/ansible/variables`:
+Create the configuration file `/etc/ansible/glpi.ini`:
 
-```bash
-GLPI_SERVER="https://glpi.example.org/plugins/webservices/rest.php"
-GLPI_ACCOUNT="user"
-GLPI_PASSWORD="password"
+```ini
+# Ansible external inventory script settings for GLPI
+#
+
+# Define an GLPI user with access to GLPI API which will be used to
+# perform required queries to obtain infromation to generate the Ansible
+# inventory output.
+#
+[glpi]
+username = "glpi_user"
+password = "glpi_password"
+url = "http://localhost/glpi/plugins/webservices/rest.php"
 ```
 
 Note: The user is a real GLPI user must be used, _not_ a Webservice user.
@@ -59,7 +67,7 @@ Note: The user is a real GLPI user must be used, _not_ a Webservice user.
 ## Usage
 
 ```bash
-ansible -i /etc/ansible/glpi.sh Rootentity -m ping
+ansible -i /etc/ansible/glpi Rootentity -m ping
 ```
 or 
 ```bash
@@ -70,17 +78,18 @@ ansible Rootentity -m ping
 To debug the script:
 
 ```bash
+cd /etc/ansible/
 # Output the cached JSON data, as used by Ansible:
-./glpi.sh --list
+./glpi --list
 
 # Reset and output the freshJSON data, as used by Ansible:
-./glpi.sh --list --cache PT0S
+./glpi --list --cache PT0S
 
 # Show GLPI Webservice requests (debug mode) :
-./glpi.sh -d
+./glpi -d
 
 # Show help
-./glpi.sh -h
+./glpi -h
 ```
 
 ## Extracted Data
