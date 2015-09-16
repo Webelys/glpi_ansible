@@ -179,7 +179,7 @@ $session = $response['session'];
 //Get Profiles and Set super-admin as current
 $response = glpi_request($options['glpi'], 'glpi.listMyProfiles', array('session' => $session));
 foreach ($response as $profile) {
-    if ($profile['name'] == 'super-admin' && $profile['current'] != 1) {
+    if (strtolower($profile['name']) == 'super-admin' && $profile['current'] != 1) {
         $response = glpi_request($options['glpi'], 'glpi.setMyProfile', array('session' => $session,'profile' => $profile['id']));
         break;
     }
