@@ -109,7 +109,7 @@ if (!isset($options['cache'])) {
 if (empty($options) || isset($options['help'])) {
     echo "Usage: " . $_SERVER["SCRIPT_FILENAME"] . " [options]\n";
     echo "\n";
-    echo "  --glpi      -g      : GLPI \"rest.php\" webservice URL (default: \"" . $glpi . "\")\n";
+    echo "  --glpi      -g      : GLPI \"rest.php\" webservice URL (default: \"" . $options['glpi'] . "\")\n";
     echo "  --username  -u      : GLPI user name\n";
     echo "  --password  -p      : GLPI user password\n";
     echo "  --list              : Return a complete JSON document (default when called by Ansible)\n";
