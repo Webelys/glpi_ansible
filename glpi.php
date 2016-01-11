@@ -36,11 +36,11 @@
 // ----------------------------------------------------------------------
 
 if (!function_exists("json_encode")) {
-   die("Extension json_encode not loaded\n");
+    die("Extension json_encode not loaded\n");
 }
 
 if (!function_exists("transliterator_transliterate")) {
-   die("Extension intl not loaded\n");
+    die("Extension intl not loaded\n");
 }
 
 $cache_file = '/tmp/.glpi_ansible_hosts_cache.json';
@@ -48,7 +48,7 @@ $cache_file = '/tmp/.glpi_ansible_hosts_cache.json';
 //Load ini configuration
 $ini = array();
 if (file_exists(getcwd().'/glpi.ini')) {
-    $ini = parse_ini_file(getcwd().'/glpi.ini',true);
+    $ini = parse_ini_file(getcwd().'/glpi.ini', true);
 }
 
 $longoptions = array(
@@ -78,8 +78,9 @@ if (sizeof($argv)>1) {
             $option = $matches[2];
         }
         //Force to long option if set
-        if (isset($longoptions[$arg]))
+        if (isset($longoptions[$arg])) {
             $arg = $longoptions[$arg];
+        }
 
         $options[$arg] = $option;
     }
@@ -90,19 +91,20 @@ if (isset($options['host'])) {
 }
 
 if (!isset($options['glpi'])) {
-   $options['glpi'] = isset($ini['glpi']['url']) ? $ini['glpi']['url'] : 'http://localhost/glpi/plugins/webservices/rest.php';
+    $options['glpi'] = isset($ini['glpi']['url']) ? $ini['glpi']['url'] : 'http://localhost/glpi/plugins/webservices/rest.php';
 }
 
 if (!isset($options['username'])) {
-   $options['username'] = isset($ini['glpi']['username']) ? $ini['glpi']['username'] : null;
+    $options['username'] = isset($ini['glpi']['username']) ? $ini['glpi']['username'] : null;
 }
 
 if (!isset($options['password'])) {
-   $options['password'] = isset($ini['glpi']['password']) ? $ini['glpi']['password'] : null;
+    $options['password'] = isset($ini['glpi']['password']) ? $ini['glpi']['password'] : null;
 }
 
-if (!isset($options['cache']))
+if (!isset($options['cache'])) {
     $options['cache'] = "P01D";
+}
 
 if (empty($options) || isset($options['help'])) {
     echo "Usage: " . $_SERVER["SCRIPT_FILENAME"] . " [options]\n";
@@ -133,26 +135,28 @@ if (file_exists($cache_file) && isset($options['list'])) {
     }
 }
 
-function glpi_request($glpi, $method, $query_datas) {
+function glpi_request($glpi, $method, $query_datas)
+{
     global $options;
     $query_datas['method'] = $method;
 
     $query_str = http_build_query($query_datas);
     $url_request = $glpi."?".$query_str;
 
-    if (isset($options['debug']))
+    if (isset($options['debug'])) {
         echo "+ Calling '".$method."' on $url_request\n";
+    }
 
     $file = file_get_contents($url_request, false);
     if (!$file) {
-       die("+ No response\n");
+        die("+ No response\n");
     }
 
     $response = json_decode($file, true);
 
     if (!is_array($response)) {
-       echo $file;
-       die ("+ Bad response\n");
+        echo $file;
+        die ("+ Bad response\n");
     }
 
     if (isset($response['faultCode'])) {
@@ -166,8 +170,8 @@ function glpi_request($glpi, $method, $query_datas) {
 $response = glpi_request($options['glpi'], 'glpi.doLogin', array('login_name' => $options['username'], 'login_password' => $options['password']));
 
 if (!is_array($response)) {
-   echo $file;
-   die ("+ Bad response\n");
+    echo $file;
+    die ("+ Bad response\n");
 }
 
 if (!isset($response['session'])) {
@@ -202,11 +206,12 @@ if (!empty($response)) {
 }
 //Loop all entities
 foreach ($entities as $entity_id => $entity) {
-        //Set children
-        foreach ($entities as $key => $parent) {
-            if ($parent['name'] == $entity['parent'])
-                $entities[$key]['children'][] = $entity['id'];
+    //Set children
+    foreach ($entities as $key => $parent) {
+        if ($parent['name'] == $entity['parent']) {
+            $entities[$key]['children'][] = $entity['id'];
         }
+    }
 }
 
 //Domains Listing
@@ -225,7 +230,7 @@ $computers = array();
 do {
     $response = glpi_request($options['glpi'], 'glpi.listObjects', array('session' => $session, 'itemtype' => 'Computer', 'start' => $start, 'limit' => $limit));
     if (!empty($response)) {
-       $computers = array_merge($computers, $response);
+        $computers = array_merge($computers, $response);
     }
     $start += $limit;
 } while (!empty($response));
@@ -237,9 +242,9 @@ foreach ($computers as $key => $computer) {
     $response = glpi_request($options['glpi'], 'glpi.getObject', array('session' => $session, 'itemtype' => 'Computer', 'id' => $computer['id']));
 
     if (!empty($response)) {
-       $computers[$key] = array_merge($computers[$key], $response);
-       $computers[$key]['entity'] = $entities[$computers[$key]['entities_id']];
-       $computers[$key]['domain'] = (isset($computers[$key]['domains_id']) && !empty($computers[$key]['domains_id'])) ? $domains[$computers[$key]['domains_id']] : "";
+        $computers[$key] = array_merge($computers[$key], $response);
+        $computers[$key]['entity'] = $entities[$computers[$key]['entities_id']];
+        $computers[$key]['domain'] = (isset($computers[$key]['domains_id']) && !empty($computers[$key]['domains_id'])) ? $domains[$computers[$key]['domains_id']] : "";
     }
 }
 
@@ -253,12 +258,13 @@ foreach ($entities as $entity) {
     $entity['name'] = str_replace(' ', '', $entity['name']);
     $inventory[$entity['name']] = array('hosts' => array(), 'children' => array());
     //List computer
-    foreach ($computers  as $computer) {
+    foreach ($computers as $computer) {
         if ($computer['entity']['id'] == $entity['id']) {
             $fqdn = str_replace(' ', '', $computer['name']).(!empty($computer['domain']) ? ".".$computer['domain'] : "");
             //Prevent duplicate host
-            if (!in_array($fqdn, $inventory[$entity['name']]['hosts']))
+            if (!in_array($fqdn, $inventory[$entity['name']]['hosts'])) {
                 $inventory[$entity['name']]['hosts'][] = $fqdn;
+            }
         }
     }
     //Set group children
