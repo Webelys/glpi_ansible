@@ -149,18 +149,27 @@ function glpi_request($glpi, $method, $query_datas)
 
     $file = file_get_contents($url_request, false);
     if (!$file) {
-        die("+ No response\n");
+        if (isset($options['debug'])) {
+            echo "+ No response\n";
+            die("{}");
+        }
     }
 
     $response = json_decode($file, true);
 
     if (!is_array($response)) {
-        echo $file;
-        die ("+ Bad response\n");
+        if (isset($options['debug'])) {
+            echo $file;
+            echo ("+ Bad response\n");
+        }
+        die("{}");
     }
 
     if (isset($response['faultCode'])) {
-        die("REST error(".$response['faultCode']."): ".$response['faultString']."\n");
+        if (isset($options['debug'])) {
+            echo "REST error(".$response['faultCode']."): ".$response['faultString']."\n";
+        }
+        die("{}");
     }
 
     return $response;
@@ -170,12 +179,18 @@ function glpi_request($glpi, $method, $query_datas)
 $response = glpi_request($options['glpi'], 'glpi.doLogin', array('login_name' => $options['username'], 'login_password' => $options['password']));
 
 if (!is_array($response)) {
-    echo $file;
-    die ("+ Bad response\n");
+    if (isset($options['debug'])) {
+        echo $file;
+        echo "+ Bad response\n";
+    }
+    die("{}");
 }
 
 if (!isset($response['session'])) {
-    die ("Bad Login/Password\nNo session set");
+    if (isset($options['debug'])) {
+        echo "Bad Login/Password\nNo session set";
+    }
+    die("{}");
 }
 
 $session = $response['session'];
