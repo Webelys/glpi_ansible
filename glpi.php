@@ -47,8 +47,9 @@ $cache_file = '/tmp/.glpi_ansible_hosts_cache.json';
 
 //Load ini configuration
 $ini = array();
-if (file_exists(getcwd().'/glpi.ini')) {
-    $ini = parse_ini_file(getcwd().'/glpi.ini', true);
+$file_ini = dirname($_SERVER["SCRIPT_FILENAME"]).'/glpi.ini';
+if (file_exists($file_ini)) {
+    $ini = parse_ini_file($file_ini, true);
 }
 
 $longoptions = array(
