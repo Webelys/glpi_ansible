@@ -1,7 +1,7 @@
 <root>
     <name>GLpi to Ansible</name>
     <key></key>
-    <state>dev</state>
+    <state>beta</state>
     <logo></logo>
     <description>
         <short>
