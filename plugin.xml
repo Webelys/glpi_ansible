@@ -31,6 +31,13 @@
         <lang>en_US</lang>
     </langs>
     <license>GPL v3</license>
-    <tags></tags>
+    <tags>
+        <en>
+            <tag>inventory</tag>
+        </en>
+        <fr>
+            <tag>inventaire</tag>
+        </fr>
+    </tags>
     <screenshots></screenshots>
 </root>
