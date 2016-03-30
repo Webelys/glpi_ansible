@@ -1,6 +1,6 @@
 <root>
     <name>GLpi to Ansible</name>
-    <key></key>
+    <key>glpi_ansible</key>
     <state>beta</state>
     <logo></logo>
     <description>
