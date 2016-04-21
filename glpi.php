@@ -107,6 +107,9 @@ if (!isset($options['cache'])) {
     $options['cache'] = "P01D";
 }
 
+//Prevent spaces on options
+$options = array_map('trim', $options);
+
 if (empty($options) || isset($options['help'])) {
     echo "Usage: " . $_SERVER["SCRIPT_FILENAME"] . " [options]\n";
     echo "\n";
