@@ -73,7 +73,7 @@ Usage: ./glpi.php [options]
   --password  -p      : GLPI user password
   --list              : Return a complete JSON document (default when called by Ansible)
   --host [hostname]   : [Not implemented yet] Return vars associated to this hostname
-  --cache [time]      : Set duration of local cache (default: "P01D" (P01D = 1 day, PTS0S=no cache)
+  --cache [time]      : Set duration of local cache (default: "P01D" (P01D = 1 day, PT0S=no cache)
   --debug     -d      : Display debug information (default disabled)
   --help      -h      : display this screen
 

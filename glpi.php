@@ -118,7 +118,7 @@ if (empty($options) || isset($options['help'])) {
     echo "  --password  -p      : GLPI user password\n";
     echo "  --list              : Return a complete JSON document (default when called by Ansible)\n";
     echo "  --host [hostname]   : [Not implemented yet] Return vars associated to this hostname\n";
-    echo "  --cache [time]      : Set duration of local cache (default: \"" . $options['cache'] . "\" (P01D = 1 day, PTS0S=no cache)\n";
+    echo "  --cache [time]      : Set duration of local cache (default: \"" . $options['cache'] . "\" (P01D = 1 day, PT0S=no cache)\n";
     echo "  --debug     -d      : Display debug information (default disabled)\n";
     echo "  --help      -h      : display this screen\n";
     echo "\n";
