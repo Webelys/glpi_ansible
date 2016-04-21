@@ -63,6 +63,24 @@ url = "http://localhost/glpi/plugins/webservices/rest.php"
 
 Note: The user is a real GLPI user must be used, _not_ a Webservice user.
 
+## Help - cli mode
+
+```bash
+Usage: ./glpi.php [options]
+
+  --glpi      -g      : GLPI "rest.php" webservice URL (default: "https://glpi.webelys.com/plugins/webservices/rest.php")
+  --username  -u      : GLPI user name
+  --password  -p      : GLPI user password
+  --list              : Return a complete JSON document (default when called by Ansible)
+  --host [hostname]   : [Not implemented yet] Return vars associated to this hostname
+  --cache [time]      : Set duration of local cache (default: "P01D" (P01D = 1 day, PTS0S=no cache)
+  --debug     -d      : Display debug information (default disabled)
+  --help      -h      : display this screen
+
+Any other options are used for REST call.
+All options can be set  in glpi.ini file
+```
+
 
 ## Usage
 
