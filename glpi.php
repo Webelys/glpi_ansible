@@ -104,7 +104,7 @@ if (!isset($options['password'])) {
 }
 
 if (!isset($options['cache'])) {
-    $options['cache'] = "P01D";
+    $options['cache'] = isset($ini['glpi']['cache']) ? $ini['glpi']['cache'] : "P01D";
 }
 
 //Prevent spaces on options
