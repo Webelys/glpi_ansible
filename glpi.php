@@ -144,7 +144,7 @@ function glpi_request($glpi, $method, $query_datas)
     global $options;
     $query_datas['method'] = $method;
 
-    $query_str = http_build_query($query_datas);
+    $query_str = urldecode(http_build_query($query_datas));
     $url_request = $glpi."?".$query_str;
 
     if (isset($options['debug'])) {
