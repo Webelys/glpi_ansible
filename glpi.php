@@ -234,13 +234,18 @@ foreach ($entities as $entity_id => $entity) {
 }
 
 //Domains Listing
-$response = glpi_request($options['glpi'], 'glpi.listDropdownValues', array('session' => $session, 'dropdown' =>'domains'));
+$start = 0;
+$limit = 20;
 $domains = array();
-if (!empty($response)) {
-    foreach ($response as $row) {
-        $domains[$row['id']] = $row['name'];
+do {
+    $response = glpi_request($options['glpi'], 'glpi.listDropdownValues', array('session' => $session, 'dropdown' =>'domains','start' => $start, 'limit' => $limit));
+    if (!empty($response)) {
+        foreach ($response as $row) {
+            $domains[$row['id']] = $row['name'];
+        }
     }
-}
+    $start += $limit;
+} while (!empty($response));
 
 //Get Computers
 $start = 0;
