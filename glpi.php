@@ -272,6 +272,11 @@ foreach ($computers as $key => $computer) {
     }
 }
 
+if (isset($options['debug'])) {
+    echo print_r($entities,true);
+    echo print_r($computers,true);
+}
+
 $response = glpi_request($options['glpi'], 'glpi.doLogout', array('session' => $session));
 
 $inventory = array();
