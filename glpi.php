@@ -209,20 +209,24 @@ foreach ($response as $profile) {
 }
 
 //Entities listing
-$response = glpi_request($options['glpi'], 'glpi.listEntities', array('session' => $session));
-
+$start = 0;
+$limit = 20;
 $entities = array();
-if (!empty($response)) {
-    foreach ($response as $row) {
-        $row_entities = explode('>', $row['completename']);
-        $entities[$row['id']] = array(
-            'id' => $row['id'],
-            'name' => trim(end($row_entities)),
-            'parent' => trim(prev($row_entities)),
-            'children' => array()
-        );
+do {
+    $response = glpi_request($options['glpi'], 'glpi.listEntities', array('session' => $session,'start' => $start, 'limit' => $limit));
+    if (!empty($response)) {
+        foreach ($response as $row) {
+            $row_entities = explode('>', $row['completename']);
+            $entities[$row['id']] = array(
+                'id' => $row['id'],
+                'name' => trim(end($row_entities)),
+                'parent' => trim(prev($row_entities)),
+                'children' => array()
+            );
+        }
     }
-}
+    $start += $limit;
+} while (!empty($response));
 //Loop all entities
 foreach ($entities as $entity_id => $entity) {
     //Set children
