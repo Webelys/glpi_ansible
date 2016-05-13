@@ -10,7 +10,7 @@
         </short>
         <long>
             <en>Import inventory from GLPI to Ansible hosts file</en>
-            <fr>Importer l'inventaire GLPI dans Ansiblelang</fr>
+            <fr>Importer l'inventaire GLPI dans Ansible</fr>
         </long>
     </description>
     <homepage>https://github.com/Webelys/glpi_ansible</homepage>
@@ -22,8 +22,12 @@
     </authors>
     <versions>
         <version>
-            <num>0.1</num>
+            <num>0.2</num>
             <compatibility>0.80</compatibility>
+        </version>
+        <version>
+            <num>0.2</num>
+            <compatibility>0.90</compatibility>
         </version>
     </versions>
     <langs>
