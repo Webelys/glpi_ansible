@@ -43,7 +43,7 @@ if (!function_exists("transliterator_transliterate")) {
     die("Extension intl not loaded\n");
 }
 
-$cache_file = '/tmp/.glpi_ansible_hosts_cache.json';
+$cache_file = sys_get_temp_dir().'/.glpi_ansible_hosts_cache.json';
 
 //Load ini configuration
 $ini = array();
