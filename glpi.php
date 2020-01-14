@@ -245,7 +245,9 @@ do {
     $response = glpi_request($options['glpi'], 'glpi.listDropdownValues', array('session' => $session, 'dropdown' =>'domains','start' => $start, 'limit' => $limit));
     if (!empty($response)) {
         foreach ($response as $row) {
-            $domains[$row['id']] = $row['name'];
+            if (isset($row['id']) && isset($row['name'])) {
+                $domains[$row['id']] = $row['name'];
+            }
         }
     }
     $start += $limit;
@@ -272,7 +274,7 @@ foreach ($computers as $key => $computer) {
     if (!empty($response)) {
         $computers[$key] = array_merge($computers[$key], $response);
         $computers[$key]['entity'] = $entities[$computers[$key]['entities_id']];
-        $computers[$key]['domain'] = (isset($computers[$key]['domains_id']) && !empty($computers[$key]['domains_id'])) ? $domains[$computers[$key]['domains_id']] : "";
+        $computers[$key]['domain'] = (isset($computers[$key]['domains_id']) && !empty($computers[$key]['domains_id']) && isset($domains[$computers[$key]['domains_id']])) ? $domains[$computers[$key]['domains_id']] : "";
     }
 }
 
