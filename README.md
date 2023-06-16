@@ -1,3 +1,12 @@
+# Discontinued project
+
+:warning: This project is no more maintenened. As we don't use anymore glpi project, this project is not useful.
+You're welcome to fork and continue its life. You can also a check some others projects to manage your IT management 
+* https://fusionsuite.org/
+* https://snipeitapp.com/
+* https://www.combodo.com/itop
+
+
 # GLPI Ansible
 
 A PHP script to retrieve [dynamic
